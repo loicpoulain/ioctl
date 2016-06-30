@@ -40,6 +40,7 @@ struct {
 	{ "CDROMEJECT", CDROMEJECT },
 	{ "HDIO_GET_IDENTITY", HDIO_GET_IDENTITY},
 	{ "HDIO_GETGEO", HDIO_GETGEO },
+	/* ADD your ioctl alias here */
 	{ },
 };
 
@@ -91,8 +92,8 @@ static int ioctl_print_data(struct ioctl_request *req)
 	for (i = 1; i <= req->size; i++) {
 		printf("%02x ", *data++);
 		if (!(i % 20)) {
-			//for (j = 20; j > 0; j--)
-			//	printf("%c ", *(data - j));
+			for (j = 20; j > 0; j--)
+				printf("%c ", *(data - j));
 			printf("\n");
 		}
 	}
@@ -106,7 +107,7 @@ static void print_ioctl_list(void)
 		struct ioctl_request req;
 
 		ioctl_fill(&req, ioctl_string[i].cmd);
-	
+
 		if (!req.legacy) {
 			printf("\t%s(0x%x) type(%c) dir(%d) nr(%d) size(%d)\n",
 			       ioctl_string[i].name, req.cmd, req.type, req.dir,
@@ -130,7 +131,7 @@ static void usage(void)
 	       "\t-V, --value <val> send a specific value \n" \
 	       "\t-O, --object <data> send specific data \n" \
 	       );
-		
+
 }
 
 static const struct option main_options[] = {
@@ -196,7 +197,7 @@ int main(int argc, char *argv[])
 		request_id = strtol(ioctl_param, NULL, 16);
 	} else {
 		while (ioctl_string[i].name) {
-			if (!strcmp(ioctl_string[i].name, ioctl_param)) { 
+			if (!strcmp(ioctl_string[i].name, ioctl_param)) {
 				request_id = ioctl_string[i].cmd;
 				break;
 			}
@@ -222,12 +223,12 @@ int main(int argc, char *argv[])
 			return EXIT_FAILURE;
 		}
 	}
-	
+
 	ioctl_fill(&req, request_id);
 
-	if (value) {
+	if (value)
 		req.arg = value;
-	} else if (alloc)
+	else if (alloc)
 		req.size = alloc;
 
 	if (req.size)
@@ -248,6 +249,6 @@ int main(int argc, char *argv[])
 
 error:
 	close(fd);
-	
+
 	return EXIT_FAILURE;
 }
